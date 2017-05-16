@@ -17,16 +17,16 @@ void printTrace(int cycle, Instruction inst){
     fptr = fopen("trace.rpt", "a");
     if(!fptr){printf("open trace file error\n");return;}
 
-    fprintf(fptr, "%d, %-4s : ", cycle, inst.name.c_str());
+    fprintf(fptr, "%d, %-4s :", cycle, inst.name.c_str());
 
-    if(traceMEM[1]) fprintf(fptr, "ITLB  ");
-    if(traceMEM[0]) fprintf(fptr, "ICache  ");
+    if(traceMEM[1]) fprintf(fptr, " ITLB ");
+    if(traceMEM[0]) fprintf(fptr, " ICache ");
 
-    if(traceMEM[2]) fprintf(fptr, "Disk  ");
-    fprintf(fptr, ";  ");
-    if(traceMEM[4]) fprintf(fptr, "DTLB  ");
-    if(traceMEM[3]) fprintf(fptr, "DCache  ");
-    if(traceMEM[5]) fprintf(fptr, "Disk  ");
+    if(traceMEM[2]) fprintf(fptr, " Disk ");
+    fprintf(fptr, " ; ");
+    if(traceMEM[4]) fprintf(fptr, " DTLB ");
+    if(traceMEM[3]) fprintf(fptr, " DCache ");
+    if(traceMEM[5]) fprintf(fptr, " Disk ");
     fprintf(fptr, "\n");
     fclose(fptr);
 }
