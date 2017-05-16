@@ -556,7 +556,7 @@ void execute(Instruction inst, int cycle){
             else if(inst.opCode == BNE)
                 satisfy = (RF.readData1 != RF.readData2)?true:false;
             else if(inst.opCode == BGTZ)
-                satisfy = ((RF.readData1>>31) >0 && RF.readData1!=0)?true:false;
+                satisfy = ((RF.readData1>>31) == 0 && RF.readData1 != 0)?true:false;
 
             pc = (satisfy)?(pc+4+(signExtenedImme << 2)):(pc+4);
         }
