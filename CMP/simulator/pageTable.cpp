@@ -8,10 +8,10 @@ PageTable::PageTable(int pageSize){
 
     this->hit = this->miss = 0;
 
-    physicalPageNumber = new unsigned int[entryNum];
+    physicalPageNumber = new int[entryNum];
     valid = new bool [entryNum];
 
-    fill(physicalPageNumber, physicalPageNumber+entryNum, 0);
+    fill(physicalPageNumber, physicalPageNumber+entryNum, -1);
     fill(valid, valid+entryNum, false);
 }
 unsigned int PageTable::readPageTable(unsigned int virtualPageNumber){
@@ -24,7 +24,8 @@ void PageTable::updatePageTable(unsigned int virtualPageNumber, unsigned int phy
     //original physical page number data should be invalid
     for(int i=0; i<entryNum; i++){
         if(this->physicalPageNumber[i] == physicalPageNumber){
-            valid[i] = false;
+            this->physicalPageNumber[i] = -1;
+			valid[i] = false;
             break;
         }
     }

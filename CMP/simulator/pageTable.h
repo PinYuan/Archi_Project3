@@ -9,7 +9,7 @@ public:
     int hit;
     int miss;
 
-    unsigned int* physicalPageNumber;
+    int* physicalPageNumber;
     bool* valid;
 
     PageTable(){};
