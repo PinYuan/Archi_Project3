@@ -192,7 +192,6 @@ unsigned int fetchInst(int cycle){
         }
         ITLB.miss++;
     }
-    ICache.printCache();
     return inst;
 }
 unsigned char getData(unsigned int dataAddress, int cycle, int offset){

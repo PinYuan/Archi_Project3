@@ -48,9 +48,6 @@ int main(int argc , char *argv[])
         totalICacheSize, ICacheBlockSize, ICacheSetAssociativity,
         totalDCacheSize, DCacheBlockSize, DCacheSetAssociativity;
 
-    /*for(int i=0; i<argc; i++){
-        printf("%s\n", argv[i]);
-    }*/
     //assign command line argument
     IMemorySize = 64;
     DMemorySize = 32;
@@ -104,10 +101,6 @@ int main(int argc , char *argv[])
         fill(traceMEM, traceMEM+6, false);
 
         Instruction instruction(fetchInst(cycle));
-        //print instruction
-        cout << "cycle" << cycle << endl;
-        printf("inst: 0x%08X ", instruction.completeInst);
-        cout << "instruction: " << instruction.name << ", type: " << instruction.type << ", regRd: " << instruction.regRd << ", regRs: " << instruction.regRs << ", regRt: " << instruction.regRt << endl;
         execute(instruction, cycle);
 
         printTrace(cycle, instruction);
