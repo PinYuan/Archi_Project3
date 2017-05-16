@@ -130,8 +130,7 @@ unsigned int fetchInst(int cycle){
                 for(int i=0; i<4; i++) inst += ICache.readCache(cacheIndex, physicalAddrTag, blockOffset+i) << (8*(3-i));
 
                 ICache.updateMRU(cacheIndex, physicalAddrTag);
-                //update memory?
-                //IMemory.updateLastCycle(physicalPageNumber, cycle);
+                IMemory.updateLastCycle(physicalPageNumber, cycle);
                 traceMEM[0] = true;
                 ICache.hit++;
             }
@@ -141,8 +140,7 @@ unsigned int fetchInst(int cycle){
                 for(int i=0; i<4; i++) inst += ICache.readCache(cacheIndex, physicalAddrTag, blockOffset+i) << (8*(3-i));
 
                 ICache.updateMRU(cacheIndex, physicalAddrTag);
-                //update memory?
-                //IMemory.updateLastCycle(physicalPageNumber, cycle);
+                IMemory.updateLastCycle(physicalPageNumber, cycle);
                 ICache.miss++;
             }
             int index = ITLB.findUsableEntry();
@@ -212,10 +210,13 @@ unsigned char getData(unsigned int dataAddress, int cycle, int offset){
         //cache hit
         if(DCache.isInCache(cacheIndex, physicalAddrTag)){
             data = DCache.readCache(cacheIndex, physicalAddrTag, blockOffset);
-            DCache.updateMRU(cacheIndex, physicalAddrTag);
-            //update memory?
+            
+			//update memory?
             if(offset == 0){
-                traceMEM[3] = true;
+           		DCache.updateMRU(cacheIndex, physicalAddrTag);
+            	DMemory.updateLastCycle(physicalPageNumber, cycle);	
+			
+			    traceMEM[3] = true;
                 DCache.hit++;
             }
         }
@@ -223,13 +224,17 @@ unsigned char getData(unsigned int dataAddress, int cycle, int offset){
         else{
             DMemory.moveFromDMEMToDCache(cacheIndex, physicalAddrTag, physicalPageNumber, pageOffset, blockOffset);
             data = DCache.readCache(cacheIndex, physicalAddrTag, blockOffset);
-            //update cache
-            DCache.updateMRU(cacheIndex, physicalAddrTag);
-            //update memory?
-            if(offset == 0) DCache.miss++;
-        }
-        DTLB.updateLastCycle(virtualPageNumber, cycle);
+          
+
+            if(offset == 0){
+            	DCache.updateMRU(cacheIndex, physicalAddrTag);
+            	DMemory.updateLastCycle(physicalPageNumber, cycle);
+
+				DCache.miss++;
+        	}
+		}
         if(offset == 0){
+        	DTLB.updateLastCycle(virtualPageNumber, cycle);
             traceMEM[4] = true;
             DTLB.hit++;
         }
@@ -249,11 +254,11 @@ unsigned char getData(unsigned int dataAddress, int cycle, int offset){
             //cache hit
             if(DCache.isInCache(cacheIndex, physicalAddrTag)){
                 data = DCache.readCache(cacheIndex, physicalAddrTag, blockOffset);
-                DCache.updateMRU(cacheIndex, physicalAddrTag);
-                //update memory?
-                //IMemory.updateLastCycle(physicalPageNumber, cycle);
                 if(offset == 0){
-                    traceMEM[3] = true;
+                	DCache.updateMRU(cacheIndex, physicalAddrTag);
+                	DMemory.updateLastCycle(physicalPageNumber, cycle);
+                    
+					traceMEM[3] = true;
                     DCache.hit++;
                 }
             }
@@ -261,16 +266,21 @@ unsigned char getData(unsigned int dataAddress, int cycle, int offset){
             else{
                 DMemory.moveFromDMEMToDCache(cacheIndex, physicalAddrTag, physicalPageNumber, pageOffset, blockOffset);
                 data = DCache.readCache(cacheIndex, physicalAddrTag, blockOffset);
-                //update cache?
-                //ICache.updateMRU(cacheIndex, physicalAddrTag);
-                //update memory?
-                //IMemory.updateLastCycle(physicalPageNumber, cycle);
-                if(offset == 0) DCache.miss++;
-            }
-            int index = DTLB.findUsableEntry();
-            DTLB.updateTLB(virtualPageNumber, physicalPageNumber, index, cycle);
-            if(offset == 0)DPageTable.hit++;
-        }
+               
+                if(offset == 0){
+					DCache.updateMRU(cacheIndex, physicalAddrTag);
+					DMemory.updateLastCycle(physicalPageNumber, cycle);
+				
+					DCache.miss++;
+            	}
+			}
+            if(offset == 0){
+            	int index = DTLB.findUsableEntry();
+            	DTLB.updateTLB(virtualPageNumber, physicalPageNumber, index, cycle);
+	
+				DPageTable.hit++;
+        	}
+		}
         //page fault
         else{
             data = DDisk.disk[dataAddress];
@@ -290,22 +300,22 @@ unsigned char getData(unsigned int dataAddress, int cycle, int offset){
             }
             //move data to mem
             DMemory.moveFromDDiskToDMem(physicalPageNumber, pageOffset, dataAddress);
-            //update memory last cycle
-            DMemory.updateLastCycle(physicalPageNumber, cycle);
-
             //move data to cache
             DMemory.moveFromDMEMToDCache(cacheIndex, physicalAddrTag, physicalPageNumber, pageOffset,
                                          blockOffset);
 
-            //update PTE
-            DPageTable.updatePageTable(virtualPageNumber, physicalPageNumber);
-
-            //update TLB
-            int index = DTLB.findUsableEntry();
-            DTLB.updateTLB(virtualPageNumber, physicalPageNumber, index, cycle);
-
             if(offset == 0){
-                traceMEM[5] = true;
+                //update memory last cycle
+                DMemory.updateLastCycle(physicalPageNumber, cycle);
+                //update PTE
+                DPageTable.updatePageTable(virtualPageNumber, physicalPageNumber);
+                //update TLB
+                int index = DTLB.findUsableEntry();
+                DTLB.updateTLB(virtualPageNumber, physicalPageNumber, index, cycle);
+                //update cache
+                DCache.updateMRU(cacheIndex, physicalAddrTag);
+
+				traceMEM[5] = true;
                 DCache.miss++;
                 DPageTable.miss++;
             }
@@ -330,12 +340,14 @@ void writeBack(unsigned int dataAddress, unsigned char data, int cycle, int offs
         //cache hit
         if(DCache.isInCache(cacheIndex, physicalAddrTag)){
             DCache.writeCache(cacheIndex, physicalAddrTag, blockOffset, data);
-            DCache.updateMRU(cacheIndex, physicalAddrTag);
             //write to memory
             DMemory.writeMemory(physicalPageNumber, pageOffset, data);
-            DMemory.updateLastCycle(physicalPageNumber, cycle);
+            
             if(offset == 0){
-                traceMEM[3] = true;
+          		DCache.updateMRU(cacheIndex, physicalAddrTag);
+           		DMemory.updateLastCycle(physicalPageNumber, cycle);     
+
+				traceMEM[3] = true;
                 DCache.hit++;
             }
         }
@@ -343,15 +355,18 @@ void writeBack(unsigned int dataAddress, unsigned char data, int cycle, int offs
         else{
             //write to memory
             DMemory.writeMemory(physicalPageNumber, pageOffset, data);
-            //DMemory.updateLastCycle(physicalPageNumber, cycle);
             //move data to cache
             DMemory.moveFromDMEMToDCache(cacheIndex, physicalAddrTag, physicalPageNumber, pageOffset, blockOffset);
-            //DCache.updateMRU(cacheIndex, physicalAddrTag);
-            if(offset == 0)DCache.miss++;
-        }
-        DTLB.updateLastCycle(virtualPageNumber, cycle);
+          
+            if(offset == 0){
+		  		DCache.updateMRU(cacheIndex, physicalAddrTag);		
+            	DMemory.updateLastCycle(physicalPageNumber, cycle);
+				DCache.miss++;
+        	}
+		}
         DDisk.disk[dataAddress] = data;
         if(offset == 0){
+        	DTLB.updateLastCycle(virtualPageNumber, cycle);
             traceMEM[4] = true;
             DTLB.hit++;
         }
@@ -371,12 +386,14 @@ void writeBack(unsigned int dataAddress, unsigned char data, int cycle, int offs
             //cache hit
             if(DCache.isInCache(cacheIndex, physicalAddrTag)){
                 DCache.writeCache(cacheIndex, physicalAddrTag, blockOffset, data);
-                DCache.updateMRU(cacheIndex, physicalAddrTag);
                 //write to memory
                 DMemory.writeMemory(physicalPageNumber, pageOffset, data);
-                DMemory.updateLastCycle(physicalPageNumber, cycle);
+                
                 if(offset == 0){
-                    traceMEM[3] = true;
+               		DCache.updateMRU(cacheIndex, physicalAddrTag);
+               		DMemory.updateLastCycle(physicalPageNumber, cycle);     
+					
+					traceMEM[3] = true;
                     DCache.hit++;
                 }
             }
@@ -384,17 +401,23 @@ void writeBack(unsigned int dataAddress, unsigned char data, int cycle, int offs
             else{
                 //write to memory
                 DMemory.writeMemory(physicalPageNumber, pageOffset, data);
-                //DMemory.updateLastCycle(physicalPageNumber, cycle);
                 //move data to cache
                 DMemory.moveFromDMEMToDCache(cacheIndex, physicalAddrTag, physicalPageNumber, pageOffset, blockOffset);
-                //DCache.updateMRU(cacheIndex, physicalAddrTag);
-                if(offset == 0)DCache.miss++;
-            }
-            int index = DTLB.findUsableEntry();
-            DTLB.updateTLB(virtualPageNumber, physicalPageNumber, index, cycle);
+                if(offset == 0){
+                	DCache.updateMRU(cacheIndex, physicalAddrTag);
+                	DMemory.updateLastCycle(physicalPageNumber, cycle);
+				
+					DCache.miss++;
+            	}
+			}
             DDisk.disk[dataAddress] = data;
-            if(offset == 0)DPageTable.hit++;
-        }
+            if(offset == 0){
+				int index = DTLB.findUsableEntry();
+				DTLB.updateTLB(virtualPageNumber, physicalPageNumber, index, cycle);
+			
+				DPageTable.hit++;
+        	}
+		}
         //page fault
         else{
             DDisk.disk[dataAddress] = data;
@@ -415,14 +438,17 @@ void writeBack(unsigned int dataAddress, unsigned char data, int cycle, int offs
             }
             DMemory.moveFromDDiskToDMem(physicalPageNumber, pageOffset, dataAddress);
 
-            DPageTable.updatePageTable(virtualPageNumber, physicalPageNumber);
-            int index = DTLB.findUsableEntry();
-            DTLB.updateTLB(virtualPageNumber, physicalPageNumber, index, cycle);
-
             DMemory.moveFromDMEMToDCache(cacheIndex, physicalAddrTag, physicalPageNumber, pageOffset, blockOffset);
-            DMemory.updateLastCycle(physicalPageNumber, cycle);
-            if(offset == 0){
-                traceMEM[5] = true;
+            
+			if(offset == 0){
+   				DMemory.updateLastCycle(physicalPageNumber, cycle);
+                DCache.updateMRU(cacheIndex, physicalAddrTag);
+                DPageTable.updatePageTable(virtualPageNumber, physicalPageNumber);
+                int index = DTLB.findUsableEntry();
+                DTLB.updateTLB(virtualPageNumber, physicalPageNumber, index, cycle);
+
+				
+				traceMEM[5] = true;
                 DCache.miss++;
                 DPageTable.miss++;
             }
