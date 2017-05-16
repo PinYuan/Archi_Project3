@@ -102,7 +102,7 @@ void Cache::deleteIEntry(unsigned int physicalPageNumber){
         for(int j=0; j<setAssociativity; j++){
             //???
             unsigned int pageOffset = i*blockSize%IMemory.pageSize;
-            unsigned int ppn = (cacheSet[i].cacheBlock[j].tag*blockSize*setNum - pageOffset)/IMemory.pageSize;
+            unsigned int ppn = (cacheSet[i].cacheBlock[j].tag*blockSize*setNum + pageOffset)/IMemory.pageSize;
             if(ppn == physicalPageNumber){
                 cacheSet[i].cacheBlock[j].valid = false;
                 cacheSet[i].cacheBlock[j].MRU = 0;
@@ -116,24 +116,11 @@ void Cache::deleteDEntry(unsigned int physicalPageNumber){
         for(int j=0; j<setAssociativity; j++){
             //???
             unsigned int pageOffset = i*blockSize%DMemory.pageSize;
-            unsigned int ppn = (cacheSet[i].cacheBlock[j].tag*blockSize*setNum - pageOffset)/DMemory.pageSize;
+            unsigned int ppn = (cacheSet[i].cacheBlock[j].tag*blockSize*setNum + pageOffset)/DMemory.pageSize;
             if(ppn == physicalPageNumber){
                 cacheSet[i].cacheBlock[j].valid = false;
                 cacheSet[i].cacheBlock[j].MRU = 0;
             }
-        }
-    }
-}
-void Cache::printCache(){
-    for(int i=0; i<setNum; i++){
-        for(int j=0; j<setAssociativity; j++){
-            printf("%d ", j);
-            for(int k=0;k<blockSize;k++){
-                printf("%02X", cacheSet[i].cacheBlock[j].data[k]);
-            }
-            printf(" MRU  %d", cacheSet[i].cacheBlock[j].MRU);
-            printf(" V  %d", cacheSet[i].cacheBlock[j].valid);
-            printf("\n");
         }
     }
 }
