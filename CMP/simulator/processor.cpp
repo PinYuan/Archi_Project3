@@ -460,7 +460,8 @@ void execute(Instruction inst, int cycle){
     if(inst.type == 'S' && inst.name == "halt"){
         halt = true;
     }
-    else if(inst.type == 'S' && inst.name == "nop"){
+    else if(inst.type == 'S' && inst.name == "sll"){
+		pc += 4;
         return;
     }
     else if(inst.type == 'J'){

@@ -46,7 +46,7 @@ Instruction::Instruction(unsigned int instruction){
         type = 'R';
         if(func == 0 && regRt == 0 && regRd == 0 && shamt == 0){
             type = 'S';
-            name = "NOP";
+            name = "sll";
         }
         else if(instFunc.find(func) != instFunc.end())
             name = instFunc[func];
