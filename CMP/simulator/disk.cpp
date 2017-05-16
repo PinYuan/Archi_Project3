@@ -4,6 +4,7 @@ using namespace std;
 
 extern unsigned int pc;
 extern unsigned int initialSp;
+extern bool halt;
 
 bool isEmpty(FILE *file){
     long savedOffset = ftell(file);
@@ -20,17 +21,22 @@ bool isEmpty(FILE *file){
 Disk::Disk(string imageFile){
     FILE *fptr;
     fptr = fopen(imageFile.c_str() , "rb");
-    if(!fptr){printf("open file error\n");return;}
+    if(!fptr){
+		halt = true;
+		printf("open file error\n");
+		return;
+	}
 
     fill(disk, disk+1024, '\0');
 
     Mode mode = (imageFile == "iimage.bin") ? INST : DATA;
 
-    pc = initialSp = nums = 0;
+    nums = 0;
     unsigned char c;
 
     if(mode == INST){
-        for(int i=0;i<4;i++){
+    	pc = 0;
+	    for(int i=0;i<4;i++){
             c = fgetc(fptr);
             pc += c << (8*(3-i));
         }
@@ -46,7 +52,8 @@ Disk::Disk(string imageFile){
         }
     }
     else if(mode == DATA){
-        if(!isEmpty(fptr)){
+        initialSp = 0;
+		if(!isEmpty(fptr)){
             for(int i=0;i<4;i++){
                 c = fgetc(fptr);
                 if(c != EOF) initialSp += c << (8*(3-i));
