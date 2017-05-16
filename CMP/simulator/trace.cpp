@@ -17,7 +17,7 @@ void printTrace(int cycle, Instruction inst){
     fptr = fopen("trace.rpt", "a");
     if(!fptr){printf("open trace file error\n");return;}
 
-    fprintf(fptr, "%d, %-4s :", cycle, inst.name.c_str());
+    fprintf(fptr, "%d, %-5s :", cycle, inst.name.c_str());
 
     if(traceMEM[0]) fprintf(fptr, " ICache ");
     if(traceMEM[1]) fprintf(fptr, " ITLB ");
