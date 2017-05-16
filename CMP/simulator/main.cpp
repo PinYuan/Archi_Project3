@@ -59,17 +59,17 @@ int main(int argc , char *argv[])
     totalDCacheSize = 16;
     DCacheBlockSize = 4;
     DCacheSetAssociativity = 1;
-    if(argc == 10){
-        IMemorySize = atoi(argv[0]);
-        DMemorySize = atoi(argv[1]);
-        IMemoryPageSize =  atoi(argv[2]);
-        DMemoryPageSize = atoi(argv[3]);
-        totalICacheSize = atoi(argv[4]);
-        ICacheBlockSize = atoi(argv[5]);
-        ICacheSetAssociativity = atoi(argv[6]);
-        totalDCacheSize = atoi(argv[7]);
-        DCacheBlockSize = atoi(argv[8]);
-        DCacheSetAssociativity = atoi(argv[9]);
+    if(argc == 11){
+        IMemorySize = atoi(argv[1]);
+        DMemorySize = atoi(argv[2]);
+        IMemoryPageSize =  atoi(argv[3]);
+        DMemoryPageSize = atoi(argv[4]);
+        totalICacheSize = atoi(argv[5]);
+        ICacheBlockSize = atoi(argv[6]);
+        ICacheSetAssociativity = atoi(argv[7]);
+        totalDCacheSize = atoi(argv[8]);
+        DCacheBlockSize = atoi(argv[9]);
+        DCacheSetAssociativity = atoi(argv[10]);
     }
 
     halt = false;
