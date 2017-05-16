@@ -19,13 +19,13 @@ unsigned int LO;
 bool illegal;
 bool traceMEM[6];//0 ICache, 1 ITLB, 2 IDisk, 3 DCache, 4 DTLB, 5 DDisk
 
-Disk IDisk;
+Disk IDisk = Disk("iimage.bin");
 Memory IMemory;
 PageTable IPageTable;
 TLB ITLB;
 Cache ICache;
 
-Disk DDisk;
+Disk DDisk = Disk("dimage.bin");
 Memory DMemory;
 PageTable DPageTable;
 TLB DTLB;
@@ -75,18 +75,18 @@ int main(int argc , char *argv[])
     halt = false;
     illegal = false;
 
-    IDisk = Disk("iimage.bin");
     IMemory = Memory(IMemorySize, IMemoryPageSize);
     IPageTable = PageTable(IMemoryPageSize);
     ITLB = TLB(IMemoryPageSize);
     ICache = Cache(totalICacheSize, ICacheBlockSize, ICacheSetAssociativity);
 
-    DDisk = Disk("dimage.bin");
     DMemory = Memory(DMemorySize, DMemoryPageSize);
     DPageTable = PageTable(DMemoryPageSize);
     DTLB = TLB(DMemoryPageSize);
     DCache = Cache(totalDCacheSize, DCacheBlockSize, DCacheSetAssociativity);
 
+	 //no image file
+    if(halt) return 0;
 
     int cycle = 0;
 
