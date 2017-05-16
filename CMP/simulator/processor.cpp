@@ -598,7 +598,7 @@ void execute(Instruction inst, int cycle){
                     data = getData(ALU1.ALUResult, cycle, 0);
                     if(inst.opCode == LB){
                         if(data>>7 == 1)
-                            RF.readWrite(0, 0, inst.regRt, (0XFFFFFF00|data<<8), 1);
+                            RF.readWrite(0, 0, inst.regRt, (0XFFFFFF00|data), 1);
                         else
                             RF.readWrite(0, 0, inst.regRt, data, 1);
                     }
