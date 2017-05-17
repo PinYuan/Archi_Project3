@@ -214,7 +214,7 @@ unsigned char getData(unsigned int dataAddress, int cycle, int offset){
 			//update memory?
             if(offset == 0){
            		DCache.updateMRU(cacheIndex, physicalAddrTag);
-            	DMemory.updateLastCycle(physicalPageNumber, cycle);	
+            	//DMemory.updateLastCycle(physicalPageNumber, cycle);	
 			
 			    traceMEM[3] = true;
                 DCache.hit++;
@@ -228,7 +228,7 @@ unsigned char getData(unsigned int dataAddress, int cycle, int offset){
 
             if(offset == 0){
             	DCache.updateMRU(cacheIndex, physicalAddrTag);
-            	DMemory.updateLastCycle(physicalPageNumber, cycle);
+            	//DMemory.updateLastCycle(physicalPageNumber, cycle);
 
 				DCache.miss++;
         	}
@@ -345,7 +345,7 @@ void writeBack(unsigned int dataAddress, unsigned char data, int cycle, int offs
             
             if(offset == 0){
           		DCache.updateMRU(cacheIndex, physicalAddrTag);
-           		DMemory.updateLastCycle(physicalPageNumber, cycle);     
+           		//DMemory.updateLastCycle(physicalPageNumber, cycle);     
 
 				traceMEM[3] = true;
                 DCache.hit++;
@@ -360,7 +360,7 @@ void writeBack(unsigned int dataAddress, unsigned char data, int cycle, int offs
           
             if(offset == 0){
 		  		DCache.updateMRU(cacheIndex, physicalAddrTag);		
-            	DMemory.updateLastCycle(physicalPageNumber, cycle);
+            	//DMemory.updateLastCycle(physicalPageNumber, cycle);
 				DCache.miss++;
         	}
 		}
