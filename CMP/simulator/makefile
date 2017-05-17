@@ -2,7 +2,7 @@ CMP:main.o processor.o ALU.o errorDetect.o instruction.o cache.o memory.o disk.o
 	g++ -std=c++11 -g -o CMP main.o processor.o ALU.o errorDetect.o instruction.o cache.o memory.o disk.o TLB.o pageTable.o regFile.o trace.o
 main.o:main.cpp
 	g++ -std=c++11 -g -c main.cpp
-simulate.o:processor.cpp
+processor.o:processor.cpp
 	g++ -std=c++11 -g -c processor.cpp
 ALU.o:ALU.cpp
 	g++ -std=c++11 -g -c ALU.cpp
