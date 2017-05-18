@@ -6,8 +6,8 @@ public:
     int pageSize;
     int entryNum;
 
-    unsigned int* physicalPageNumber;
-    unsigned int* tag;
+    int* physicalPageNumber;
+    int* tag;
     unsigned int* lastRefCycle;
     bool* valid;
 

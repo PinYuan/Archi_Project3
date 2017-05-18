@@ -8,13 +8,13 @@ TLB::TLB(int pageSize){
 
     this->hit = this->miss = 0;
 
-    physicalPageNumber = new unsigned int[entryNum];
-    tag = new unsigned int[entryNum];
+    physicalPageNumber = new int[entryNum];
+    tag = new int[entryNum];
     lastRefCycle = new unsigned int[entryNum];
     valid = new bool[entryNum];
 
-    fill(physicalPageNumber, physicalPageNumber+entryNum, 0);
-    fill(tag, tag+entryNum, 0);
+    fill(physicalPageNumber, physicalPageNumber+entryNum, -1);
+    fill(tag, tag+entryNum, -1);
     fill(lastRefCycle, lastRefCycle+entryNum, 0);
     fill(valid, valid+entryNum, false);
 }
@@ -71,6 +71,8 @@ void TLB::updateTLB(unsigned int virtualPageNumber, unsigned int physicalPageNum
 void TLB::deleteEntry(unsigned int physicalPageNumber){
     for(int i=0; i<entryNum; i++){
         if(this->physicalPageNumber[i] == physicalPageNumber){
+			this->physicalPageNumber[i] = -1;
+            tag[i] = -1;
 			valid[i] = false;
 		}
     }
